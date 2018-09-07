@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+function output_line() {
+  local spacing="      "
+  echo "${spacing} $1"
+}
+
+function export_mix_env() {
+  if [ -z "$MIX_ENV" ]; then
+    if [ -d $env_path ] && [ -f $env_path/MIX_ENV ]; then
+      export MIX_ENV=$(cat $env_path/MIX_ENV)
+    else
+      export MIX_ENV=${1:-prod}
+    fi
+  fi
+
+  output_line "* MIX_ENV=${MIX_ENV}"
+}
+
+build_pack_path=$(cd $(dirname $(dirname $0)); pwd)
+
+source ${build_pack_path}/lib/misc_funcs.sh
+
+export_mix_env "test"
+
+"$(dirname ${0:-})/compile" "$1" "$2" "$3"
